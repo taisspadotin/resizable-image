@@ -10,12 +10,13 @@ export default class Element extends React.Component{
             startY: 0,
             height: 100,
             width: 100,
-            lastY: 0
+            lastY: 0,
+            top: 50
         }
     }
 
     componentDidMount(){
-        const p = document.getElementById("div1");
+        //const p = document.getElementById("div1");
         /*p.className = p.className + ' resizable';
         var resizer = document.createElement('div');
         resizer.className = 'resizer';
@@ -51,23 +52,45 @@ export default class Element extends React.Component{
      }
 
     handleDrag(op, e){
-        let { height, lastY } = this.state;
+        let soma = 1;
+        let sub = -1;
+        let { height, lastY, top } = this.state;
         
-        if(op == "bottom"){
-            console.log("e.clientY > lastY", e.clientY, lastY)
-            let soma = 1;
-            let sub = -1;
+        console.log("e.clientY > lastY", e.clientY, lastY)
+
+        if(op === "bottom"){
             if(lastY !== 0 && e.clientY !== 0){
                 soma = e.clientY - lastY;
                 sub = e.clientY - lastY;
             }
-            console.log(soma)
             if(e.clientY !== lastY){
                 this.setState({height: e.clientY > lastY ? (height + soma) : (height + sub), lastY: e.clientY})
             }
         }
-        //else if(op)
-        
+        else if(op === "rigth"){
+
+        }
+        else if(op === "top"){
+            if(lastY !== 0 && e.clientY !== 0){
+                soma = lastY - e.clientY;
+                sub = e.clientY - lastY;
+            }
+            console.log("soma", soma)
+console.log("sub", sub)
+            if(e.clientY !== lastY && top !== 0){
+                console.log("(height + soma)", (height + soma))
+                console.log("(height + sub)", (height + sub))
+                console.log("e.clientY < lastY", e.clientY < lastY)
+                this.setState({
+                    height: e.clientY < lastY ? (height + soma) : (height + sub),
+                    top: e.clientY < lastY ? (top - soma) : (top + sub),
+                    lastY: e.clientY})
+                    
+            }
+        }
+        else if(op === "left"){
+
+        }
     }
 
     handleDragStart = async (e) =>{
@@ -77,24 +100,31 @@ export default class Element extends React.Component{
     }
 
     render(){
-        let { height, lastY } = this.state;
+        let { top } = this.state;
         return(
-            <div style={{position: 'absolute', background: 'green', width: this.state.width, height: this.state.height, top: 50}}>
+            <div style={{position: 'absolute', background: 'green', width: this.state.width, height: this.state.height, top: top}}>
             <div style={{position: 'relative', width: this.state.width, height: this.state.height}}>
                 
                     <div id="div1"
-                    draggable={true}
-                    onDragStart={()=>console.log("teste")}
-                    onDragEnd={()=>console.log("teste leave")}
-                    style={{width: '100%', height: '10px', background: '#000', position: 'absolute', top: 0, cursor: 's-resize'}}></div>
-                    <div style={{height: '100%', width: '10px', background: '#000', position: 'absolute', top: 0, right: 0, cursor: 'e-resize'}}></div>
-                    <div style={{height: '100%', width: '10px', background: '#000', position: 'absolute', top: 0, left: 0, cursor: 'e-resize'}}></div>
+                        draggable={true}
+                        onDragStart={(e)=> this.handleDragStart(e)}
+                        onDrag={(e)=> this.handleDrag("top",e)}
+                        style={{width: '100%', height: '10px', background: '#000', position: 'absolute', top: 0, cursor: 's-resize'}}></div>
                     <div
-                    draggable={true}
-                    onDragStart={(e)=> this.handleDragStart(e)}
-                    onDrag={(e)=> this.handleDrag("bottom",e)}
-                    onDragEnd={(e)=>console.log("teste leave", e)}
-                    style={{width: '100%', height: '10px', background: '#000', position: 'absolute',  bottom: 0, cursor: 's-resize'}}></div>
+                        draggable={true}
+                        onDragStart={(e)=> this.handleDragStart(e)}
+                        onDrag={(e)=> this.handleDrag("rigth",e)}
+                        style={{height: '100%', width: '10px', background: '#000', position: 'absolute', top: 0, right: 0, cursor: 'e-resize'}}></div>
+                    <div
+                        draggable={true}
+                        onDragStart={(e)=> this.handleDragStart(e)}
+                        onDrag={(e)=> this.handleDrag("left",e)}
+                        style={{height: '100%', width: '10px', background: '#000', position: 'absolute', top: 0, left: 0, cursor: 'e-resize'}}></div>
+                    <div
+                        draggable={true}
+                        onDragStart={(e)=> this.handleDragStart(e)}
+                        onDrag={(e)=> this.handleDrag("bottom",e)}
+                        style={{width: '100%', height: '10px', background: '#000', position: 'absolute',  bottom: 0, cursor: 's-resize'}}></div>
                     <div>
                         {this.props.children}
                     </div>
